@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/fczuardi/slideshow-instagram/issues"
   },
-  "homepage": "https://github.com/fczuardi/slideshow-instagram"
+  "homepage": "https://github.com/fczuardi/slideshow-instagram",
+  "dependencies": {
+    "instagram-node-lib": "^0.1.1"
+  }
 }
