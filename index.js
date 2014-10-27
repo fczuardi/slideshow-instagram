@@ -1,7 +1,4 @@
 var Config = require('./config');
-
-console.log(Config);
-
 Instagram = require('instagram-node-lib');
 
 Instagram.set('client_id', Config.clientID);
@@ -9,23 +6,14 @@ Instagram.set('client_secret', Config.clientSecret);
 
 //create data dir
 
-
-Instagram.tags.info({
-  name: Config.tags[1],
-  complete: function(data){
-    console.log(data);
-  }
-});
-
-
 Instagram.tags.recent({
-  name: Config.tags[1],
+  name: Config.tags[2],
   complete: function(mediaObjects){
     mediaObjects.forEach(function(a, b){
         console.log(a.images.standard_resolution.url);
     });
     //save data to json to a file
-    // console.log(JSON.stringify(data, " ", 2));
+    // console.log(JSON.stringify(mediaObjects, " ", 2));
   }
 });
 
