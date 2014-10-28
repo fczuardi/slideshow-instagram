@@ -1,12 +1,17 @@
 var Config = require('./config'),
     Instagram = require('instagram-node-lib'),
-    fs = require('fs');
+    fs = require('fs'),
+    mkdirp = require('mkdirp');
 
 
 Instagram.set('client_id', Config.clientID);
 Instagram.set('client_secret', Config.clientSecret);
 
 //create data dir
+mkdirp('www/data', function (err) {
+    if (err) console.error(err)
+    else console.log('data dir created');
+});
 
 function updateTagJSON(tag){
     Instagram.tags.recent({
