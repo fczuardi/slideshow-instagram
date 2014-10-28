@@ -26,6 +26,7 @@ function updateTagJSON(tag){
             'www/data/response-' + tag + '.json',
             JSON.stringify(mediaObjects, " ", 2), function (err) {
           if (err) throw err;
+          console.log('www/data/response-' + tag + '.json '+ (new Date).toUTCString());
         });
       }
     });
@@ -34,6 +35,14 @@ function updateTagJSON(tag){
 Config.tags.forEach(function (tag){
     updateTagJSON(tag);
 });
+var interval = setInterval(function(){
+    console.log('-----');
+    Config.tags.forEach(function (tag){
+        updateTagJSON(tag);
+    });
+}, 1000 * 60 * 1);
+
+
 
 //baixa a lista das últimas fotos com a tag x
 
