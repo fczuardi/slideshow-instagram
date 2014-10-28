@@ -244,11 +244,13 @@
         }
         var vp = getViewportSize(), ww = vp.width, wh = vp.height, iw = $img.width(), ih = $img.height(), rw = wh / ww, ri = ih / iw, newWidth, newHeight, newLeft, newTop, properties;
         if (rw > ri) {
-            newWidth = wh / ri;
-            newHeight = wh;
-        } else {
+        //    newWidth = wh / ri;
+        //    newHeight = wh;
             newWidth = ww;
             newHeight = ww * ri;
+        } else {
+            newHeight = wh;
+            newWidth = wh *ri;
         }
         properties = {
             width: newWidth + "px",
