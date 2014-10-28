@@ -4,3 +4,4 @@
 - [ ] tela de admin para remover fotos
 - [ ] blacklist de usuários
 - [ ] remover todas as fotos de um usuario
+- [ ] fullscreen api

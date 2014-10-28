@@ -1,22 +1,33 @@
-var Config = require('./config');
-Instagram = require('instagram-node-lib');
+var Config = require('./config'),
+    Instagram = require('instagram-node-lib'),
+    fs = require('fs');
+
 
 Instagram.set('client_id', Config.clientID);
 Instagram.set('client_secret', Config.clientSecret);
 
 //create data dir
 
-Instagram.tags.recent({
-  name: Config.tags[1],
-  complete: function(mediaObjects){
-    mediaObjects.forEach(function(a, b){
-        // console.log(a.images.standard_resolution.url);
-    });
-    //save data to json to a file
-    console.log(JSON.stringify(mediaObjects, " ", 2));
-  }
-});
+function updateTagJSON(tag){
+    Instagram.tags.recent({
+      name: tag,
+      complete: function(mediaObjects){
+        // mediaObjects.forEach(function(a, b){
+        //     // console.log(a.images.standard_resolution.url);
+        // });
 
+        //save data to json to a file
+        fs.writeFile(
+            'www/data/response-' + tag + '.json',
+            JSON.stringify(mediaObjects, " ", 2), function (err) {
+          if (err) throw err;
+        });
+      }
+    });
+}
+
+updateTagJSON(Config.tags[1]);
+updateTagJSON(Config.tags[2]);
 
 //baixa a lista das últimas fotos com a tag x
 
