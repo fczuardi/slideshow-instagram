@@ -7,13 +7,13 @@ Instagram.set('client_secret', Config.clientSecret);
 //create data dir
 
 Instagram.tags.recent({
-  name: Config.tags[2],
+  name: Config.tags[1],
   complete: function(mediaObjects){
     mediaObjects.forEach(function(a, b){
-        console.log(a.images.standard_resolution.url);
+        // console.log(a.images.standard_resolution.url);
     });
     //save data to json to a file
-    // console.log(JSON.stringify(mediaObjects, " ", 2));
+    console.log(JSON.stringify(mediaObjects, " ", 2));
   }
 });
 
