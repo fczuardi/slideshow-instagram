@@ -31,8 +31,9 @@ function updateTagJSON(tag){
     });
 }
 
-updateTagJSON(Config.tags[1]);
-updateTagJSON(Config.tags[2]);
+Config.tags.forEach(function (tag){
+    updateTagJSON(tag);
+});
 
 //baixa a lista das últimas fotos com a tag x
 
