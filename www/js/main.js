@@ -32,8 +32,8 @@ if (URLParameterTag.length > 0){
 }
 if (window.location.href.indexOf('semanaticket') != -1){
     tag = 'semanaticket';
-    $('#watermarks').attr('style','display:block;');
 }
+    $('#watermarks').attr('style','display:block;');
 
 getPhotoURLsForTag(tag, function(backgrounds){
     $.vegas('slideshow', {
