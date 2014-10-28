@@ -1,0 +1,6 @@
+- [ ] naturezanacidade pegar fotos a partir de 28/10
+- [ ] atualizar lista de fotos a cada x minutos
+- [ ] front-end, cachear fotos e funcionar offline
+- [ ] tela de admin para remover fotos
+- [ ] blacklist de usuários
+- [ ] remover todas as fotos de um usuario
