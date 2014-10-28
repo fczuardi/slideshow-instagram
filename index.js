@@ -14,22 +14,32 @@ mkdirp('www/data', function (err) {
 });
 
 function updateTagJSON(tag){
-    Instagram.tags.recent({
-      name: tag,
-      complete: function(mediaObjects){
-        // mediaObjects.forEach(function(a, b){
-        //     // console.log(a.images.standard_resolution.url);
-        // });
-
-        //save data to json to a file
-        fs.writeFile(
-            'www/data/response-' + tag + '.json',
-            JSON.stringify(mediaObjects, " ", 2), function (err) {
-          if (err) throw err;
-          console.log('www/data/response-' + tag + '.json '+ (new Date).toUTCString());
-        });
-      }
-    });
+    var tagParts = tag.split(':'),
+        tag = tagParts[0],
+        createdAfter = tagParts[1],
+        callParameters = {
+          name: tag,
+          complete: function (mediaObjects){
+              var visibleObjects = [];
+              createdAfter = (createdAfter == undefined) ? 0 : createdAfter;
+              mediaObjects.forEach(function(item){
+                  if (item.created_time > createdAfter){
+                      visibleObjects.push(item);
+                  }
+              });
+              fs.writeFile(
+                  'www/data/response-' + tag + '.json',
+                  JSON.stringify(visibleObjects, " ", 2), function (err) {
+                if (err) throw err;
+                console.log(
+                    tag + '.json '+
+                    (new Date).toUTCString() +
+                    createdAfter
+                );
+              });
+          }
+        };
+    Instagram.tags.recent(callParameters);
 }
 
 Config.tags.forEach(function (tag){
