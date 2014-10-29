@@ -4,29 +4,28 @@ var delay = 5000,
     tag = 'naturezanacidade';
 
 function getPhotoURLsForTag(tag, cb){
-    var backgrounds = [];
-
+    var bg = [];
+    console.log('destroy')
+    $.vegas('destroy');
+    $('body').unbind('vegaswalk');
     $.getJSON( 'data/response-'+tag+'.json?' + (new Date).getTime())
-    .always(function(){
-        console.log('destroy')
-        $.vegas('destroy');
-    })
     .fail(function() {
         console.log( "Error: Feed unavailable" );
-        console.log('restart');
         startSlideshow();
     })
     .done(function( data ) {
         $.each( data, function( i, item ) {
-            if (i > 4){return;}
-            backgrounds.push(
+            // if (i > 1){return;}
+            bg.push(
                 {
                     src: item.images.standard_resolution.url,
                     fade: 1000
                 }
             );
         });
-        cb(backgrounds);
+        backgrounds = bg;
+        lastSlide = backgrounds.length -1;
+        cb();
     });
 };
 
@@ -47,22 +46,18 @@ function startSlideshow(){
         src:'js/vegas/overlays/05.png',
         opacity: 0.2
     });
-
+    $('body').bind('vegaswalk',
+        function(e, bg, step) {
+            if (step === lastSlide) {
+                $.vegas('pause');
+                setTimeout(restartSlideshow, delay);
+            }
+        }
+    );
 }
 function restartSlideshow(){
-    console.log('restartSlideshow');
-    getPhotoURLsForTag(tag, function(bg){
-        backgrounds = bg;
-        lastSlide = backgrounds.length -1;
+    getPhotoURLsForTag(tag, function(){
         startSlideshow();
-        $('body').bind('vegaswalk',
-            function(e, bg, step) {
-                if (step === lastSlide) {
-                    $.vegas('pause');
-                    setTimeout(restartSlideshow, delay);
-                }
-            }
-        );
     });
 }
 
