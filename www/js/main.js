@@ -7,6 +7,10 @@ function getPhotoURLsForTag(tag, cb){
     var backgrounds = [];
 
     $.getJSON( 'data/response-'+tag+'.json?' + (new Date).getTime())
+    .always(function(){
+        console.log('destroy')
+        $.vegas('destroy');
+    })
     .fail(function() {
         console.log( "Error: Feed unavailable" );
         console.log('restart');
@@ -22,8 +26,6 @@ function getPhotoURLsForTag(tag, cb){
                 }
             );
         });
-        console.log('destroy')
-        $.vegas('destroy');
         cb(backgrounds);
     });
 };
