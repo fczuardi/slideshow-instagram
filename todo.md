@@ -1,6 +1,8 @@
-- [ ] naturezanacidade pegar fotos a partir de 28/10
-- [ ] atualizar lista de fotos a cada x minutos
-- [ ] front-end, cachear fotos e funcionar offline
+- [x] naturezanacidade pegar fotos a partir de 28/10
+- [x] atualizar lista de fotos a cada minuto
+- [x] front-end, sobreviver a queda com todas as fotos cacheadas
+- [ ] front-end, appcache para o html
+- [ ] front-end, localstorage para as fotos
 - [ ] tela de admin para remover fotos
 - [ ] blacklist de usuários
 - [ ] remover todas as fotos de um usuario
