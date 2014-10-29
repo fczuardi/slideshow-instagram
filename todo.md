@@ -3,10 +3,10 @@ Roadmap
 
 v1.1.0
 -----
-- [ ] Usar um BD
+- [x] Usar um BD
   - [x] instalar TingoDB
-  - [ ] guardar todas as fotos em um bd
-- [ ] substituir o json gerado direto da api por um json gerado a partir do bd
+  - [x] guardar todas as fotos em um bd
+- [x] substituir o json gerado direto da api por um json gerado a partir do bd
 - [ ] tela de admin para remover fotos
 - [ ] blacklist de usuários
 - [ ] remover todas as fotos de um usuario
