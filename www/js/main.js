@@ -97,7 +97,7 @@ if (URLParameterDisplay != 'list'){
     restartSlideshow();
 }else{
     displayPictureList();
-    $('#watermarks', '#click-overlay').attr('style','display:none;');
+    $('#watermarks, #click-overlay').css('display','none');
 }
 
 });
