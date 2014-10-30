@@ -36,9 +36,13 @@ app.use(function(req, res, next) {
         next();
     }
 });
+app.use('/www', express.static(__dirname + '/www'));
 
 app.get('/', function(req, res) {
-    res.send('Hello World');
+    res.send('Index');
+});
+app.get('/admin', function(req, res) {
+    res.sendFile('admin-www/index.html', {root:__dirname});
 });
 
 app.listen(Config.adminPort)
