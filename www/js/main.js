@@ -92,10 +92,10 @@ if (window.location.href.indexOf('semanaticket') != -1){
     tag = 'semanaticket';
 }
 if (URLParameterDisplay != 'list'){
-    $('#watermarks').attr('style','display:block;');
     restartSlideshow();
 }else{
     displayPictureList();
+    $('#watermarks').attr('style','display:none;');
 }
 
 });

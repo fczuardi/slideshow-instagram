@@ -1,3 +1,15 @@
+#watermark-top{
+    position:fixed;
+    top:20px;
+    left:20px;
+}
+#watermark-bottom{
+    position:fixed;
+    background-color:rgba(255,255,255,0.5);
+    border-radius:10px;
+    bottom:20px;
+    right:20px;
+}
 .photo-list{
 
 }
