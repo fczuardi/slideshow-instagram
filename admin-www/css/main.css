@@ -1,0 +1,19 @@
+body{
+    color:#fff;
+}
+.photo-list li{
+    display:block;
+    float:left;
+    position:relative;
+}
+.photo-list li form{
+    position:absolute;
+    top:0px;
+    left:0px;
+}
+.photo-list li form{
+    background-color:rgba(0,0,0,0.5);
+    padding:4px;
+    font-size:10px;
+    font-family:sans;
+}

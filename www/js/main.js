@@ -1,7 +1,8 @@
 var delay = 5000,
     backgrounds = [],
     lastSlide = 19,
-    tag = 'naturezanacidade';
+    tag = 'naturezanacidade',
+    isAdminURL = window.location.href.indexOf('admin') != -1;
 
 function getPhotoURLsForTag(tag, cb){
     var bg = [];
@@ -63,22 +64,33 @@ function restartSlideshow(){
     });
 }
 
+function buildAdminUI(){
+    console.log('use a URL correta.');
+    return false;
+}
 function displayPictureList(){
-    var html = '<ul class="photo-list">';
-    $.getJSON( 'data/response-'+tag+'-30.json?' + (new Date).getTime())
+    var filename = 'data/response-'+tag+'-30.json?' + (new Date).getTime(),
+        url = isAdminURL ? ('../www/' + filename) : filename,
+        html = '<ul class="photo-list">';
+    $.getJSON(url)
     .fail(function() {
         console.log( "Error: Feed unavailable" );
     })
     .done(function( data ) {
         $.each( data, function( i, item ) {
-            var image = item.images.low_resolution;
-            html += '<li><a href="'+item.link+
+            var image = item.images.thumbnail;
+            html += '<li data-id="'+item._id+'"'+
+                    'data-username="'+item.user.username+'"'+
+                    '><a href="'+item.link+
                     '"><img src="'+image.url+
                     '" width="'+image.width+
                     '" height="'+image.height+'" ></a></li>';
         });
         html += '</ul>';
         $('body').append(html);
+        if (isAdminURL){
+            buildAdminUI();
+        }
     });
 }
 
@@ -93,7 +105,7 @@ if (URLParameterTag.length > 0){
 if (window.location.href.indexOf('semanaticket') != -1){
     tag = 'semanaticket';
 }
-if (URLParameterDisplay != 'list'){
+if (URLParameterDisplay != 'list' && !isAdminURL){
     restartSlideshow();
 }else{
     displayPictureList();

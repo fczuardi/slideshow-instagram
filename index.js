@@ -37,13 +37,14 @@ app.use(function(req, res, next) {
     }
 });
 app.use('/www', express.static(__dirname + '/www'));
+app.use('/admin', express.static(__dirname + '/admin-www'));
 
 app.get('/', function(req, res) {
     res.send('Index');
 });
-app.get('/admin', function(req, res) {
-    res.sendFile('admin-www/index.html', {root:__dirname});
-});
+// app.get('/admin', function(req, res) {
+//     res.sendFile('admin-www/index.html', {root:__dirname});
+// });
 
 app.listen(Config.adminPort)
 
