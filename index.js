@@ -28,7 +28,9 @@ function writeFeedForTag(tag){
         {'limit':30, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
-            var filenameAll = 'www/data/response-' + tag + '-30.json', //API TOS doesn't allow more than 30 pics per page http://instagram.com/about/legal/terms/api/
+            //Instagram API TOS doesn't allow more than 30 pics per page 
+            //http://instagram.com/about/legal/terms/api/
+            var filenameAll = 'www/data/response-' + tag + '-30.json',
                 filenameRecent = 'www/data/response-' + tag + '.json',
                 recentResults = [];
             if (err) throw err;
