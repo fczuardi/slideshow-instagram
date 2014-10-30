@@ -100,9 +100,13 @@ Instagram.set('client_id', Config.clientID);
 Instagram.set('client_secret', Config.clientSecret);
 
 function writeFeedForTag(tag){
+    var queryUser = {
+            'tags': tag,
+            'slideshow_hide': {$ne: 'on'}
+        }
     //querie visible photos for that tag
     collection.find(
-        {'tags':tag},//query
+        queryUser,//query
         {
             'id':true,
             'images':true,
