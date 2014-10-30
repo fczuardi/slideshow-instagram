@@ -7,7 +7,7 @@ v1.1.0
   - [x] instalar TingoDB
   - [x] guardar todas as fotos em um bd
 - [x] substituir o json gerado direto da api por um json gerado a partir do bd
-- [ ] click na foto vai p/ instagram
+- [x] click na foto vai p/ instagram
 - [ ] tela de admin para remover fotos
 - [ ] blacklist de usuários
 - [ ] remover todas as fotos de um usuario

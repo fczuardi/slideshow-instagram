@@ -19,6 +19,7 @@ function getPhotoURLsForTag(tag, cb){
             bg.push(
                 {
                     src: item.images.standard_resolution.url,
+                    link:item.link,
                     fade: 1000
                 }
             );
@@ -48,6 +49,7 @@ function startSlideshow(){
     });
     $('body').bind('vegaswalk',
         function(e, bg, step) {
+            $('#click-overlay').attr('href', backgrounds[step].link);
             if (step === lastSlide) {
                 $.vegas('pause');
                 setTimeout(restartSlideshow, delay);
@@ -95,7 +97,7 @@ if (URLParameterDisplay != 'list'){
     restartSlideshow();
 }else{
     displayPictureList();
-    $('#watermarks').attr('style','display:none;');
+    $('#watermarks', '#click-overlay').attr('style','display:none;');
 }
 
 });
