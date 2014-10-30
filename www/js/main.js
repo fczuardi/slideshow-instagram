@@ -79,8 +79,11 @@ function displayPictureList(){
     .done(function( data ) {
         $.each( data, function( i, item ) {
             var image = item.images.thumbnail;
-            html += '<li data-id="'+item._id+'"'+
+            html += '<li data-id="'+item.id+'"'+
                     'data-username="'+item.user.username+'"'+
+                    'data-user-id="'+item.user.id+'"'+
+                    'data-favorite="'+item.slideshow_favorite+'"'+
+                    'data-hide="'+item.slideshow_hide+'"'+
                     '><a href="'+item.link+
                     '"><img src="'+image.url+
                     '" width="'+image.width+

@@ -5,7 +5,8 @@ var Config = require('./config'),
     Db = require('tingodb')({'searchInArray':true}).Db,
     mkdirp = require('mkdirp'),
     express = require('express'),
-    auth = require('basic-auth');
+    auth = require('basic-auth'),
+    bodyParser = require('body-parser');
 
 var photoEntriesUpdating = {};  //semaphores for checking when all photos for
                                 //each tag have finished updating in the db
@@ -19,11 +20,17 @@ mkdirp('www/data/db', function (err) {
 
 //create db
 var db = new Db('www/data/db', {}),
-    collection = db.collection("photos");
+    collection = db.collection("photos"),
+    userCollection = db.collection("users");
+
+// collection.remove({'tags':'blue'}, {w:1}, function(err, numberOfRemovedDocs) {
+//     console.log('removed ',numberOfRemovedDocs);
+// });
 
 // Admin web interface
 //----------------------------------------------------------------------------
 var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(function(req, res, next) {
     var credentials = auth(req)
     if (!credentials ||
@@ -42,9 +49,47 @@ app.use('/admin', express.static(__dirname + '/admin-www'));
 app.get('/', function(req, res) {
     res.send('Index');
 });
-// app.get('/admin', function(req, res) {
-//     res.sendFile('admin-www/index.html', {root:__dirname});
-// });
+
+app.post('/api/photos/:id', function (req, res, next) {
+    var favorite = (req.body.favorite != 'on') ? 'off' : 'on',
+        hide = (req.body.hide != 'on') ? 'off' : 'on',
+        tag = req.body.tag,
+        userId = req.body.userId,
+        userBlacklisted = (req.body.userBlacklisted == 'on'),
+        photoId = req.params.id,
+        output = '';
+    //upsert photo on DB
+    collection.findAndModify(
+        {id: photoId},//query
+        [['_id','asc']],//sort order
+        {$set:{
+                'slideshow_favorite':favorite,
+                'slideshow_hide':hide
+            }
+        },//fields to update
+        {w:1, new:true},
+        function(err, result) {
+            if (err) throw err;
+            writeFeedForTag(tag);
+            output += "photo updated:\n"+JSON.stringify(result, ' ', 2);
+            userCollection.findAndModify(
+                {id: userId},//query
+                [['id','asc']],//sort order
+                {blocked: userBlacklisted},//replacement object
+                {w:1, upsert:true, new:true},//options
+                function(err, result) {
+                    if (err) throw err;
+                    output += "\n\nblacklist updated:\n"+
+                                JSON.stringify(result);
+                    res.send('<p><a href="/admin">voltar</a></p><pre>' +
+                                output +
+                                '</pre><p><a href="/admin">voltar</a></p>'
+                            );
+                }
+            );
+        }
+    );
+});
 
 app.listen(Config.adminPort)
 
@@ -58,7 +103,14 @@ function writeFeedForTag(tag){
     //querie visible photos for that tag
     collection.find(
         {'tags':tag},//query
-        {'images':true,'link':true, 'user':true},//fields
+        {
+            'id':true,
+            'images':true,
+            'link':true,
+            'user':true,
+            'slideshow_favorite':true,
+            'slideshow_hide':true
+        },//fields
         {'limit':30, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
@@ -108,12 +160,11 @@ function updateTagJSON(tag){
                         photoEntriesUpdating[tag] -= 1;
                         return;
                     }
-
                     //upsert photo on DB
                     collection.findAndModify(
                         {id: item.id},//query
                         [['created_time','asc']],//sort order
-                        item,//replacement object
+                        {$set:item},//replacement object
                         {w:1, upsert:true},//options
                         function(err, result) {
                             if (err) throw err;

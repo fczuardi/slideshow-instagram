@@ -1,5 +1,5 @@
 var blacklistedUsers = [
-    'fczuardi'
+    '2449147'
     ];
 
 function buildAdminUI(){
@@ -9,20 +9,29 @@ function buildAdminUI(){
         var li = $(this),
             photoId = li.data('id'),
             username = li.data('username'),
-            userBlacklisted = blacklistedUsers.indexOf(username) != -1,
+            userId = '' + li.data('user-id'),
+            isFavorite = li.data('favorite') == 'on',
+            isHidden = li.data('hide') == 'on',
+            userBlacklisted = blacklistedUsers.indexOf(userId) != -1,
             formHTML = ''+
-'<form class="photo-form" action="photos/' +
+'<form class="photo-form" action="/api/photos/' +
     photoId + '" method="POST">' +
-    '<p class="username">' +
+    '<p class="username">bloquear ' +
         username +
-        '<input type="checkbox" name="userBlacklisted"'+
+        '<input type="checkbox" name="userBlacklisted" '+
         (userBlacklisted ? 'checked' : '') +
         '/>' +
     '</p>' +
-    '<label>favorita <input type="checkbox" name="favorite"/></label>' +
+    '<label>favorita <input type="checkbox" name="favorite" '+
+    (isFavorite ? 'checked' : '') +'/></label>' +
+    '<label>esconder <input type="checkbox" name="hide" '+
+    (isHidden ? 'checked' : '') +'/></label>' +
+    '<input type="hidden" name="userId" value="'+userId+'" /></label>' +
+    '<input type="hidden" name="tag" value="'+tag+'" /></label>' +
     '<br /><input type="submit" value="salvar" />' +
 '</form>';
 
+    console.log(li.data('favorite'), isFavorite, userId, userBlacklisted);
         $(this).append(formHTML);
     });
     $('.photo-form').bind('submit',function(ev){
