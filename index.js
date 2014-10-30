@@ -25,16 +25,27 @@ function writeFeedForTag(tag){
     collection.find(
         {'tags':tag},//query
         {'images':true,'link':true, 'user':true},//fields
-        {'limit':20, 'sort':[['created_time','desc']]}//options
+        {'limit':200, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
+            var filenameAll = 'www/data/response-' + tag + '-200.json',
+                filenameRecent = 'www/data/response-' + tag + '.json',
+                recentResults = [];
             if (err) throw err;
-            //write json file
+            //write json file with the latest 200 photos for that tag
             fs.writeFile(
-                'www/data/response-' + tag + '.json',
+                filenameAll,
                 JSON.stringify(results, " ", 2), function (err) {
               if (err) throw err;
-              console.log(tag + '.json '+ (new Date).toUTCString());
+              console.log(filenameAll + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
+            });
+            recentResults = results.slice(0,20);
+            //write json file with the latest 20 photos for that tag
+            fs.writeFile(
+                filenameRecent,
+                JSON.stringify(recentResults, " ", 2), function (err) {
+              if (err) throw err;
+              console.log(filenameRecent + ' written at '+ (new Date).toUTCString()+' photos:'+recentResults.length);
             });
         }
     );
