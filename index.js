@@ -3,14 +3,15 @@ var fs = require('fs');
 var Config = require('./config'),
     Instagram = require('instagram-node-lib'),
     Db = require('tingodb')({'searchInArray':true}).Db,
-    mkdirp = require('mkdirp');
+    mkdirp = require('mkdirp'),
+    express = require('express'),
+    auth = require('basic-auth');
 
 var photoEntriesUpdating = {};  //semaphores for checking when all photos for
                                 //each tag have finished updating in the db
 
-Instagram.set('client_id', Config.clientID);
-Instagram.set('client_secret', Config.clientSecret);
-
+// Database setup
+//----------------------------------------------------------------------------
 //create data dir
 mkdirp('www/data/db', function (err) {
     if (err) console.error(err);
@@ -20,6 +21,34 @@ mkdirp('www/data/db', function (err) {
 var db = new Db('www/data/db', {}),
     collection = db.collection("photos");
 
+// Admin web interface
+//----------------------------------------------------------------------------
+var app = express();
+app.use(function(req, res, next) {
+    var credentials = auth(req)
+    if (!credentials ||
+            credentials.name !== Config.adminUser ||
+            credentials.pass !== Config.adminPassword) {
+        res.statusCode = 401;
+        res.setHeader('WWW-Authenticate', 'Basic realm="admin"');
+        res.end('Unauthorized');
+    } else {
+        next();
+    }
+});
+
+app.get('/', function(req, res) {
+    res.send('Hello World');
+});
+
+app.listen(Config.adminPort)
+
+
+// Photo feeds creation / periodic updates
+//----------------------------------------------------------------------------
+Instagram.set('client_id', Config.clientID);
+Instagram.set('client_secret', Config.clientSecret);
+
 function writeFeedForTag(tag){
     //querie visible photos for that tag
     collection.find(
@@ -28,7 +57,7 @@ function writeFeedForTag(tag){
         {'limit':30, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
-            //Instagram API TOS doesn't allow more than 30 pics per page 
+            //Instagram API TOS doesn't allow more than 30 pics per page
             //http://instagram.com/about/legal/terms/api/
             var filenameAll = 'www/data/response-' + tag + '-30.json',
                 filenameRecent = 'www/data/response-' + tag + '.json',
