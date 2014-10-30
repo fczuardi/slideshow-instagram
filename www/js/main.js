@@ -61,16 +61,41 @@ function restartSlideshow(){
     });
 }
 
+function displayPictureList(){
+    var html = '<ul class="photo-list">';
+    $.getJSON( 'data/response-'+tag+'-200.json?' + (new Date).getTime())
+    .fail(function() {
+        console.log( "Error: Feed unavailable" );
+    })
+    .done(function( data ) {
+        $.each( data, function( i, item ) {
+            var image = item.images.low_resolution;
+            html += '<li><a href="'+item.link+
+                    '"><img src="'+image.url+
+                    '" width="'+image.width+
+                    '" height="'+image.height+'" ></a></li>';
+        });
+        html += '</ul>';
+        $('body').append(html);
+    });
+}
+
 //init
 $(function() {
 
-var URLParameterTag = getParameterByName('tag');
+var URLParameterTag = getParameterByName('tag'),
+    URLParameterDisplay = getParameterByName('display');
 if (URLParameterTag.length > 0){
     tag = URLParameterTag;
 }
 if (window.location.href.indexOf('semanaticket') != -1){
     tag = 'semanaticket';
 }
+if (URLParameterDisplay != 'list'){
     $('#watermarks').attr('style','display:block;');
     restartSlideshow();
+}else{
+    displayPictureList();
+}
+
 });
