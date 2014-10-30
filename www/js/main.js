@@ -65,7 +65,7 @@ function restartSlideshow(){
 
 function displayPictureList(){
     var html = '<ul class="photo-list">';
-    $.getJSON( 'data/response-'+tag+'-200.json?' + (new Date).getTime())
+    $.getJSON( 'data/response-'+tag+'-30.json?' + (new Date).getTime())
     .fail(function() {
         console.log( "Error: Feed unavailable" );
     })

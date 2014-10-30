@@ -25,10 +25,10 @@ function writeFeedForTag(tag){
     collection.find(
         {'tags':tag},//query
         {'images':true,'link':true, 'user':true},//fields
-        {'limit':200, 'sort':[['created_time','desc']]}//options
+        {'limit':30, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
-            var filenameAll = 'www/data/response-' + tag + '-200.json',
+            var filenameAll = 'www/data/response-' + tag + '-30.json', //API TOS doesn't allow more than 30 pics per page http://instagram.com/about/legal/terms/api/
                 filenameRecent = 'www/data/response-' + tag + '.json',
                 recentResults = [];
             if (err) throw err;
