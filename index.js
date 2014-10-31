@@ -8,7 +8,8 @@ var Config = require('./config'),
     auth = require('basic-auth'),
     bodyParser = require('body-parser');
 
-var photoEntriesUpdating = {};  //semaphores for checking when all photos for
+var blockedUsers = [],
+    photoEntriesUpdating = {};  //semaphores for checking when all photos for
                                 //each tag have finished updating in the db
 
 // Database setup
@@ -69,18 +70,22 @@ app.post('/api/photos/:id', function (req, res, next) {
         },//fields to update
         {w:1, new:true},
         function(err, result) {
+            var replacement = userBlacklisted ?
+                            {id: userId, $addToSet: { 'blocked_tags': tag}} :
+                            {id: userId, $pull: { 'blocked_tags': tag}};
             if (err) throw err;
-            writeFeedForTag(tag);
             output += "photo updated:\n"+JSON.stringify(result, ' ', 2);
+            //updated user blacklist for that tag
             userCollection.findAndModify(
-                {id: userId},//query
+                {'id': userId},//query
                 [['id','asc']],//sort order
-                {blocked: userBlacklisted},//replacement object
+                replacement,//replacement object
                 {w:1, upsert:true, new:true},//options
                 function(err, result) {
                     if (err) throw err;
                     output += "\n\nblacklist updated:\n"+
                                 JSON.stringify(result);
+                    updateBlockedUsersAndFeeds(tag);
                     res.send('<p><a href="/admin">voltar</a></p><pre>' +
                                 output +
                                 '</pre><p><a href="/admin">voltar</a></p>'
@@ -99,53 +104,88 @@ app.listen(Config.adminPort)
 Instagram.set('client_id', Config.clientID);
 Instagram.set('client_secret', Config.clientSecret);
 
-function writeFeedForTag(tag){
-    var queryUser = {
-            'tags': tag,
-            'slideshow_hide': {$ne: 'on'}
+function getBlockedUsers(tag, cb){
+    userCollection.find(
+        {'blocked_tags':tag},//query
+        {id:true}//fields
+    ).toArray(
+        function(err, results){
+            if (err) throw err;
+            blockedUsers = [];
+            results.forEach(function(item){
+                blockedUsers.push(item.id);
+            });
+            cb(tag);
         }
-    //querie visible photos for that tag
-    collection.find(
-        queryUser,//query
-        {
+    );
+}
+
+function updateBlockedUsersAndFeeds(tag){
+    var blacklistfilename = 'www/data/blacklist-'+ tag +'.json';
+    getBlockedUsers(tag, function(){
+        fs.writeFile(
+            blacklistfilename,
+            JSON.stringify(blockedUsers, " ", 2),
+            function (err) {
+                if (err) throw err;
+                console.log(blacklistfilename + ' updated at '+
+                                        (new Date).toUTCString());
+        });
+        writeFeedForTag(tag);
+        writeFeedForTag(tag, true);
+    });
+}
+
+function writeFeedForTag(tag, admin){
+    var queryAdmin = {
+        'tags': tag,
+        },
+        queryUser = {
+            'tags': tag,
+            'slideshow_hide': {$ne: 'on'},
+            'user.id': {$nin:blockedUsers}
+        },
+        fieldsUser = {
+            'id':true,
+            'images':true,
+            'link':true,
+            'user':true,
+        },
+        fieldsAdmin = {
             'id':true,
             'images':true,
             'link':true,
             'user':true,
             'slideshow_favorite':true,
             'slideshow_hide':true
-        },//fields
-        {'limit':30, 'sort':[['created_time','desc']]}//options
+        },
+        filenameAdmin = 'www/data/response-' + tag + '-admin.json',
+        filenameUser = 'www/data/response-' + tag + '.json',
+        query = admin ? queryAdmin : queryUser,
+        fields = admin ? fieldsAdmin : fieldsUser,
+        filename = admin ? filenameAdmin : filenameUser,
+        limit = admin ? 100 : 20;
+    //querie visible photos for that tag
+    collection.find(
+        query,
+        fields,
+        {'limit':limit, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
-            //Instagram API TOS doesn't allow more than 30 pics per page
-            //http://instagram.com/about/legal/terms/api/
-            var filenameAll = 'www/data/response-' + tag + '-30.json',
-                filenameRecent = 'www/data/response-' + tag + '.json',
-                recentResults = [];
             if (err) throw err;
             //write json file with the latest 200 photos for that tag
             fs.writeFile(
-                filenameAll,
+                filename,
                 JSON.stringify(results, " ", 2), function (err) {
               if (err) throw err;
-              console.log(filenameAll + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
-            });
-            recentResults = results.slice(0,20);
-            //write json file with the latest 20 photos for that tag
-            fs.writeFile(
-                filenameRecent,
-                JSON.stringify(recentResults, " ", 2), function (err) {
-              if (err) throw err;
-              console.log(filenameRecent + ' written at '+ (new Date).toUTCString()+' photos:'+recentResults.length);
+              console.log(filename + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
             });
         }
     );
-
 }
 
 //Call instagram tags.recent entrypoint for a tag
-//and write the results on a json file.
+//and write the results on a database.
 //
 //If the tag parameter has colons in it, such as blue:1414375200075
 //the value after the first colon will be treated as a timestamp to hide
@@ -175,7 +215,7 @@ function updateTagJSON(tag){
                             photoEntriesUpdating[tag] -= 1;
                             if (photoEntriesUpdating[tag] === 0){
                                 //write json file for this tag
-                                writeFeedForTag(tag);
+                                updateBlockedUsersAndFeeds(tag);
                             }
                         }
                     );

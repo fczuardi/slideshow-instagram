@@ -64,12 +64,14 @@ function restartSlideshow(){
     });
 }
 
-function buildAdminUI(){
+function adminInit(){
     console.log('use a URL correta.');
     return false;
 }
 function displayPictureList(){
-    var filename = 'data/response-'+tag+'-30.json?' + (new Date).getTime(),
+    var filename = 'data/response-'+tag+
+                    (isAdminURL ? '-admin': '') +
+                    '.json?' + (new Date).getTime(),
         url = isAdminURL ? ('../www/' + filename) : filename,
         html = '<ul class="photo-list">';
     $.getJSON(url)
@@ -92,7 +94,7 @@ function displayPictureList(){
         html += '</ul>';
         $('body').append(html);
         if (isAdminURL){
-            buildAdminUI();
+            adminInit();
         }
     });
 }

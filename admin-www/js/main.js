@@ -1,6 +1,4 @@
-var blacklistedUsers = [
-    '2449147'
-    ];
+var blacklistedUsers = [];
 
 function buildAdminUI(){
     console.log('real buildAdminUI');
@@ -30,8 +28,6 @@ function buildAdminUI(){
     '<input type="hidden" name="tag" value="'+tag+'" /></label>' +
     '<br /><input type="submit" value="salvar" />' +
 '</form>';
-
-    console.log(li.data('favorite'), isFavorite, userId, userBlacklisted);
         $(this).append(formHTML);
     });
     $('.photo-form').bind('submit',function(ev){
@@ -39,4 +35,21 @@ function buildAdminUI(){
         console.log('form submitted');
     });
     return false;
+}
+
+function getBlockedUsers(){
+    var url = '../www/data/blacklist-'+ tag +'.json';
+    $.getJSON(url)
+    .fail(function() {
+        console.log( "Error: Feed unavailable" );
+    })
+    .done(function( data ) {
+        blacklistedUsers = data;
+        buildAdminUI();
+    });
+
+}
+
+function adminInit(){
+    getBlockedUsers();
 }
