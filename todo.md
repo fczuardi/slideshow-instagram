@@ -13,6 +13,7 @@ v1.1.0
 - [x] blacklist de usuários por tag
 - [x] possibilidade de marcar favoritos no admin
 - [x] filtros da listagem na tela de admin
+- [x] URL de mosaico com todas as fotos
 - [ ] créditos na tela
 
 v1.2.0
@@ -22,11 +23,6 @@ v1.2.0
   - [ ] front-end, appcache para o html
   - [ ] front-end, localstorage para as fotos
 - [ ] link para a licença e o código
-
-v1.3.0
-------
-- [ ] URL de mosaico com todas as fotos
-
 
 v2.0.0
 ------
