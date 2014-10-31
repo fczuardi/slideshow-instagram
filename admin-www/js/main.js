@@ -28,7 +28,10 @@ function buildAdminUI(){
     '<input type="hidden" name="tag" value="'+tag+'" /></label>' +
     '<br /><input type="submit" value="salvar" />' +
 '</form>';
-        $(this).append(formHTML);
+        li.append(formHTML);
+        if (userBlacklisted){
+            li.attr('data-blocked', 'on');
+        }
     });
     $('.photo-form').bind('submit',function(ev){
         // ev.preventDefault();
@@ -50,6 +53,17 @@ function getBlockedUsers(){
 
 }
 
+function filterToggle(ev){
+    var link = $(this),
+        filter = link.data('filter'),
+        className = 'filter-'+filter;
+    ev.preventDefault();
+    console.log('filterToggle', filter);
+    $('body').toggleClass(className);
+    link.toggleClass('on');
+}
+
 function adminInit(){
+    $('.filters a').click(filterToggle);
     getBlockedUsers();
 }

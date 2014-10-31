@@ -17,3 +17,22 @@ body{
     font-size:10px;
     font-family:sans;
 }
+.filters a{
+    color:#ccc;
+}
+body.filter-favorite a.on,
+body.filter-hidden a.on,
+body.filter-blocked a.on{
+    color:green !important;
+}
+body.filter-favorite li{
+    display:none;
+}
+body.filter-favorite li[data-favorite="on"]{
+    display:block;
+}
+body.filter-hidden li[data-hide="on"],
+body.filter-blocked li[data-blocked="on"]{
+    display: none;
+
+}

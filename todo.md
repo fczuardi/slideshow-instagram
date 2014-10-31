@@ -12,6 +12,7 @@ v1.1.0
 - [x] tela de admin para remover fotos
 - [x] blacklist de usuários por tag
 - [x] possibilidade de marcar favoritos no admin
+- [x] filtros da listagem na tela de admin
 - [ ] créditos na tela
 
 v1.2.0
@@ -30,7 +31,7 @@ v1.3.0
 v2.0.0
 ------
 - [ ] trocar por tag subscription e eliminar o poll a cada minuto
-
+- [ ] senhas separadas para o admin de cada tag
 
 Versões Passadas
 ================
