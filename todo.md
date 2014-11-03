@@ -3,8 +3,9 @@ Roadmap
 
 v1.2.0
 -----
+- [ ] feeds paginados para poder carregar mais de 30
 - [ ] testar possíveis melhorias como
-  - [ ] front-end, appcache para o html
+  - [x] front-end, appcache para o html
   - [ ] fullscreen api
   - [ ] front-end, localstorage para as fotos
   - [ ] copiar fotos no disco local

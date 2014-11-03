@@ -174,28 +174,41 @@ function writeFeedForTag(tag, admin){
             'slideshow_favorite':true,
             'slideshow_hide':true
         },
+        // orderBy = {} $orderby: { age : -1 }
         filenameAdmin = 'www/data/response-' + tag + '-admin.json',
         filenameUser = 'www/data/response-' + tag + '.json',
-        query = admin ? queryAdmin : queryUser,
-        fields = admin ? fieldsAdmin : fieldsUser,
-        filename = admin ? filenameAdmin : filenameUser,
-        limit = admin ? 100 : 30,
+        isAdmin = admin !== undefined,
+        query = isAdmin ? queryAdmin : queryUser,
+        fields = isAdmin ? fieldsAdmin : fieldsUser,
+        filename = isAdmin ? filenameAdmin : filenameUser,
+        filenameParts = filename.split('.'),
+        firstPageName = filenameParts[0] +
+                            '-page-0' +
+                            '.' + filenameParts[1],
+        limit = (isAdmin ? 100 : 30),
+        queryLimit = 200,
         latestVersion = [];
     //if writing the user feed, get the contents to check if it changed
-    if (!admin){
-        latestVersion = JSON.parse(fs.readFileSync(filename, "utf8"));
+    if (isAdmin){
+        try{
+            latestVersion = JSON.parse(
+                fs.readFileSync(firstPageName, "utf8")
+            );
+        }catch(e){
+            console.log(e);
+            latestVersion = [];
+        }
     }
     //querie visible photos for that tag
     collection.find(
         query,
         fields,
-        {'limit':limit, 'sort':[['created_time','desc']]}//options
+        {'limit':queryLimit, 'sort':[['created_time','desc']]}//options
     ).toArray(
         function(err, results){//callback
             if (err) throw err;
-            var newFileContents = JSON.stringify(results, " ", 2),
-                haveChanged = 'false';
-            if (!admin){
+            var haveChanged = false;
+            if (!isAdmin){
                 for (var index=0; index < results.length; index++){
                     try{
                         var item = latestVersion[index];
@@ -208,19 +221,37 @@ function writeFeedForTag(tag, admin){
                     }
                 }
                 // compare old with new
-                console.log('have '+ filename + ' changed? ', haveChanged);
-                if (haveChanged === true){
+                console.log('have '+ firstPageName +
+                                ' changed? ', haveChanged);
+                if (haveChanged){
                     updateAppCacheFile();
                 }
             }
-            if (admin || haveChanged === true){
-                //write json file with the latest 200 photos for that tag
-                fs.writeFile(
-                    filename,
-                    newFileContents, function (err) {
-                  if (err) throw err;
-                  console.log(filename + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
-                });
+            if (isAdmin || haveChanged){
+                var numPages = Math.ceil(results.length / limit);
+                for (var p=0; p < numPages; p++){
+                    var list = results.slice(p*limit, (p+1)*limit),
+                        paginatedFilename = filenameParts[0] +
+                                            '-page-' + p +
+                                            '.' + filenameParts[1],
+                        newFileContents = '';
+                    if (list.length == limit){
+                        list[limit-1].nextFeed = filenameParts[0] +
+                                                    '-page-' + (p+1) +
+                                                    '.' + filenameParts[1];
+                    }
+                    newFileContents = JSON.stringify(list, " ", 2);
+                    //write json file
+                    console.log('writing '+ paginatedFilename +
+                                (new Date).toUTCString() +
+                                ' photos:' + list.length);
+                    fs.writeFile(
+                        paginatedFilename,
+                        newFileContents, function (err) {
+                            if (err) throw err;
+                        }
+                    );
+                }
             }
         }
     );
