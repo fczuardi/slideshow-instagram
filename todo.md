@@ -14,7 +14,7 @@ v1.1.0
 - [x] possibilidade de marcar favoritos no admin
 - [x] filtros da listagem na tela de admin
 - [x] URL de mosaico com todas as fotos
-- [ ] créditos na tela
+- [x] créditos na tela
 
 v1.2.0
 -----

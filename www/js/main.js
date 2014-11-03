@@ -21,6 +21,7 @@ function getPhotoURLsForTag(tag, cb){
                 {
                     src: item.images.standard_resolution.url,
                     link:item.link,
+                    user:item.user,
                     fade: 1000
                 }
             );
@@ -50,7 +51,14 @@ function startSlideshow(){
     });
     $('body').bind('vegaswalk',
         function(e, bg, step) {
+            //click on the image open photo on instagram
             $('#click-overlay').attr('href', backgrounds[step].link);
+            //user icon and user name of the author on the credits div
+            $('#author-icon').attr('src',
+                            backgrounds[step].user.profile_picture);
+            $('#author-link').attr('href',
+                    'http://instagram.com/'+backgrounds[step].user.username
+                    ).text(backgrounds[step].user.username);
             if (step === lastSlide) {
                 $.vegas('pause');
                 setTimeout(restartSlideshow, delay);
