@@ -1,3 +1,4 @@
+var APPCACHE_FILE = 'www/v1.1.0.appcache';
 var fs = require('fs');
 
 var Config = require('./config'),
@@ -136,6 +137,20 @@ function updateBlockedUsersAndFeeds(tag){
     });
 }
 
+function updateAppCacheFile(){
+    var contents = fs.readFileSync(APPCACHE_FILE, "utf8");
+    contents = contents.replace(
+        /# updated_time: (.*)/,
+        '# updated_time: '+(new Date).toUTCString());
+
+    fs.writeFile(
+        APPCACHE_FILE,
+        contents, function (err) {
+            if (err) throw err;
+            console.log(APPCACHE_FILE + ' updated');
+    });
+}
+
 function writeFeedForTag(tag, admin){
     var queryAdmin = {
         'tags': tag,
@@ -190,6 +205,9 @@ function writeFeedForTag(tag, admin){
                 }
                 // compare old with new
                 console.log('have '+ filename + ' changed? ', haveChanged);
+                if (haveChanged === true){
+                    updateAppCacheFile();
+                }
             }
             if (admin || haveChanged === true){
                 //write json file with the latest 200 photos for that tag
