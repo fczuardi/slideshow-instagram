@@ -11,6 +11,7 @@ v1.2.0
   - [ ] copiar fotos no disco local
 - [ ] link para a licença e o código
 - [ ] melhor documentação de como instalar no server ou rodar localmente
+- [ ] keyboard navigation
 
 v2.0.0
 ------

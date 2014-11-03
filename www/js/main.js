@@ -2,22 +2,34 @@ var delay = 5000,
     backgrounds = [],
     lastSlide = 19,
     tag = 'naturezanacidade',
-    isAdminURL = window.location.href.indexOf('admin') != -1;
+    isAdminURL = window.location.href.indexOf('admin') != -1,
+    page = 0,
+    hasNextPage = false;
 
 function getPhotoURLsForTag(tag, cb, cachedFeed){
+    if (hasNextPage) {
+        page += 1;
+    }else {
+        page = 0;
+    }
     var bg = [],
         url = (cachedFeed === true) ?
-                    'data/response-'+tag+'.json' :
-                    'data/response-'+tag+'.json?' + (new Date).getTime();
+                    'data/response-'+tag+
+                        '-page-'+page+'.json' :
+                    'data/response-'+tag+
+                        '-page-'+page+'.json?'+
+                        (new Date).getTime();
     $.vegas('destroy');
     $('body').unbind('vegaswalk');
     $.getJSON( url)
     .fail(function() {
         console.log( "Error: Feed unavailable" );
         console.log('keep using the feed we have...');
+        hasNextPage = false;
         startSlideshow();
     })
     .done(function( data ) {
+        console.log(data.length)
         $.each( data, function( i, item ) {
             // if (i > 1){return;}
             bg.push(
@@ -28,6 +40,10 @@ function getPhotoURLsForTag(tag, cb, cachedFeed){
                     fade: 1000
                 }
             );
+            if (i == data.length -1){
+                console.log('last photo item', item.nextFeed !== undefined);
+                hasNextPage = (item.nextFeed !== undefined);
+            }
         });
         backgrounds = bg;
         lastSlide = backgrounds.length -1;
@@ -83,6 +99,7 @@ function adminInit(){
 function displayPictureList(){
     var filename = 'data/response-'+tag+
                     (isAdminURL ? '-admin': '') +
+                    '-page-'+page+
                     '.json?' + (new Date).getTime(),
         url = isAdminURL ? ('../www/' + filename) : filename,
         html = '<ul class="photo-list">';

@@ -151,6 +151,38 @@ function updateAppCacheFile(){
     });
 }
 
+function compareFeedChanges(filename, results, hasNextFeed){
+    var latestVersion = [],
+        haveChanged = false,
+        previousHaveNextFeed = false;
+    try{
+        latestVersion = JSON.parse(
+            fs.readFileSync(filename, "utf8")
+        );
+        console.log(filename,'parsed');
+    }catch(e){
+        console.log(e);
+        return true;
+    }
+    previousHaveNextFeed = (latestVersion[latestVersion.length -1].nextFeed !== undefined)
+    if (hasNextFeed !== previousHaveNextFeed){
+        return true;
+    }
+    for (var index=0; index < Math.max(results.length, latestVersion.length); index++){
+        try{
+            var item = latestVersion[index];
+            if (results[index].id != item.id){
+                console.log(results[index].id, item.id);
+                return true;
+            }
+        }catch(e){
+            console.log(e);
+            return true;
+        }
+    }
+    return haveChanged;
+}
+
 function writeFeedForTag(tag, admin){
     var queryAdmin = {
         'tags': tag,
@@ -182,24 +214,9 @@ function writeFeedForTag(tag, admin){
         fields = isAdmin ? fieldsAdmin : fieldsUser,
         filename = isAdmin ? filenameAdmin : filenameUser,
         filenameParts = filename.split('.'),
-        firstPageName = filenameParts[0] +
-                            '-page-0' +
-                            '.' + filenameParts[1],
         limit = (isAdmin ? 100 : 30),
         queryLimit = 200,
         latestVersion = [];
-    //if writing the user feed, get the contents to check if it changed
-    if (!isAdmin){
-        try{
-            latestVersion = JSON.parse(
-                fs.readFileSync(firstPageName, "utf8")
-            );
-            console.log(firstPageName,'parsed');
-        }catch(e){
-            console.log(e);
-            latestVersion = [];
-        }
-    }
     //querie visible photos for that tag
     collection.find(
         query,
@@ -208,42 +225,31 @@ function writeFeedForTag(tag, admin){
     ).toArray(
         function(err, results){//callback
             if (err) throw err;
-            var haveChanged = (latestVersion.length === 0);
-            if (!isAdmin){
-                for (var index=0; index < latestVersion.length; index++){
-                    try{
-                        var item = latestVersion[index];
-                        if (results[index].id != item.id){
-                            console.log(results[index].id, item.id);
-                            haveChanged = true;
-                            break;
-                        }
-                    }catch(e){
-                        console.log(e);
-                        console.log(results.length, latestVersion.length, index, results[index].id);
-                        haveChanged = true;
-                        break;
-                    }
+            var numPages = Math.ceil(results.length / limit);
+            for (var p=0; p < numPages; p++){
+                var list = results.slice(p*limit, (p+1)*limit),
+                    paginatedFilename = filenameParts[0] +
+                                        '-page-' + p +
+                                        '.' + filenameParts[1],
+                    newFileContents = '',
+                    haveChanged = false,
+                    hasNextFeed = results.length > (p+1)*limit;
+                if (!isAdmin){
+                    haveChanged = compareFeedChanges(
+                                            paginatedFilename,
+                                            list,
+                                            hasNextFeed
+                                    );
+                    // compare old with new
+                    console.log('have ', paginatedFilename,
+                                ' changed? ', haveChanged,
+                                ' photos ', list.length);
                 }
-                // compare old with new
-                console.log('have '+ firstPageName +
-                                ' changed? ', haveChanged);
-                if (haveChanged){
-                    updateAppCacheFile();
-                }
-            }
-            if (isAdmin || haveChanged){
-                var numPages = Math.ceil(results.length / limit);
-                for (var p=0; p < numPages; p++){
-                    var list = results.slice(p*limit, (p+1)*limit),
-                        paginatedFilename = filenameParts[0] +
-                                            '-page-' + p +
-                                            '.' + filenameParts[1],
-                        newFileContents = '';
-                    if (list.length == limit){
+                if (isAdmin || haveChanged){
+                    if (hasNextFeed){
                         list[limit-1].nextFeed = filenameParts[0] +
-                                                    '-page-' + (p+1) +
-                                                    '.' + filenameParts[1];
+                                                '-page-' + (p+1) +
+                                                '.' + filenameParts[1];
                     }
                     newFileContents = JSON.stringify(list, " ", 2);
                     //write json file
@@ -256,6 +262,9 @@ function writeFeedForTag(tag, admin){
                             if (err) throw err;
                         }
                     );
+                }
+                if (haveChanged){
+                    updateAppCacheFile();
                 }
             }
         }
