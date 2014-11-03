@@ -1,0 +1,21 @@
+CACHE MANIFEST
+# updated_time: Mon, 03 Nov 2014 21:53:56 GMT
+# v1.2.0-alpha - commit 5c3350552da84e78b5b1edbd557e618e648fa164
+
+/index.html
+/css/main.css
+/js/main.js
+/img/logo-topo_100x80.png
+/img/footer-logo_275x50.png
+/data/response-semanaticket-page-0.json
+/data/response-naturezanacidade-page-0.json
+
+/js/jquery-2.1.1.min.js
+
+/js/vegas/jquery.vegas.css
+/js/vegas/jquery.vegas.js
+/js/vegas/overlays/05.png
+/js/vegas/images/loading.gif
+
+NETWORK:
+*
