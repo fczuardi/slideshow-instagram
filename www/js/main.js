@@ -58,8 +58,8 @@ function startSlideshow(){
             //click on the image open photo on instagram
             $('#click-overlay').attr('href', backgrounds[step].link);
             //user icon and user name of the author on the credits div
-            $('#author-icon').attr('src',
-                            backgrounds[step].user.profile_picture);
+            // $('#author-icon').attr('src',
+                            // backgrounds[step].user.profile_picture);
             $('#author-link').attr('href',
                     'http://instagram.com/'+backgrounds[step].user.username
                 ).text('foto: '+ backgrounds[step].user.username);
