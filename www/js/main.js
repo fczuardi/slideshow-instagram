@@ -58,7 +58,7 @@ function startSlideshow(){
                             backgrounds[step].user.profile_picture);
             $('#author-link').attr('href',
                     'http://instagram.com/'+backgrounds[step].user.username
-                    ).text(backgrounds[step].user.username);
+                ).text('foto: '+ backgrounds[step].user.username);
             if (step === lastSlide) {
                 $.vegas('pause');
                 setTimeout(restartSlideshow, delay);

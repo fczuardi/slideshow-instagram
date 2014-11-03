@@ -29,7 +29,7 @@ body{
     height:50px;
     border-radius:10px;
     overflow:hidden;
-    display:block;
+    display:none;
 }
 #author-link{
     font-family:sans;
