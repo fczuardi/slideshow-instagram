@@ -164,7 +164,12 @@ function writeFeedForTag(tag, admin){
         query = admin ? queryAdmin : queryUser,
         fields = admin ? fieldsAdmin : fieldsUser,
         filename = admin ? filenameAdmin : filenameUser,
-        limit = admin ? 100 : 20;
+        limit = admin ? 100 : 20,
+        latestVersion = [];
+    //if writing the user feed, get the contents to check if it changed
+    if (!admin){
+        latestVersion = JSON.parse(fs.readFileSync(filename, "utf8"));
+    }
     //querie visible photos for that tag
     collection.find(
         query,
@@ -173,13 +178,28 @@ function writeFeedForTag(tag, admin){
     ).toArray(
         function(err, results){//callback
             if (err) throw err;
-            //write json file with the latest 200 photos for that tag
-            fs.writeFile(
-                filename,
-                JSON.stringify(results, " ", 2), function (err) {
-              if (err) throw err;
-              console.log(filename + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
-            });
+            var newFileContents = JSON.stringify(results, " ", 2),
+                haveChanged = 'false';
+            if (!admin){
+                for (var index=0; index < latestVersion.length; index++){
+                    var item = latestVersion[index];
+                    if (results[index].id != item.id){
+                        haveChanged = true;
+                        break;
+                    }
+                }
+                // compare old with new
+                console.log('have '+ filename + ' changed? ', haveChanged);
+            }
+            if (admin || haveChanged === true){
+                //write json file with the latest 200 photos for that tag
+                fs.writeFile(
+                    filename,
+                    newFileContents, function (err) {
+                  if (err) throw err;
+                  console.log(filename + ' written at ' + (new Date).toUTCString() + ' photos:' + results.length);
+                });
+            }
         }
     );
 }
