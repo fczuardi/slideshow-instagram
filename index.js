@@ -189,11 +189,12 @@ function writeFeedForTag(tag, admin){
         queryLimit = 200,
         latestVersion = [];
     //if writing the user feed, get the contents to check if it changed
-    if (isAdmin){
+    if (!isAdmin){
         try{
             latestVersion = JSON.parse(
                 fs.readFileSync(firstPageName, "utf8")
             );
+            console.log(firstPageName,'parsed');
         }catch(e){
             console.log(e);
             latestVersion = [];
@@ -207,17 +208,21 @@ function writeFeedForTag(tag, admin){
     ).toArray(
         function(err, results){//callback
             if (err) throw err;
-            var haveChanged = false;
+            var haveChanged = (latestVersion.length === 0);
             if (!isAdmin){
-                for (var index=0; index < results.length; index++){
+                for (var index=0; index < latestVersion.length; index++){
                     try{
                         var item = latestVersion[index];
                         if (results[index].id != item.id){
+                            console.log(results[index].id, item.id);
                             haveChanged = true;
                             break;
                         }
                     }catch(e){
+                        console.log(e);
+                        console.log(results.length, latestVersion.length, index, results[index].id);
                         haveChanged = true;
+                        break;
                     }
                 }
                 // compare old with new
