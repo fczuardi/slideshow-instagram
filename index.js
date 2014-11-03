@@ -179,7 +179,7 @@ function writeFeedForTag(tag, admin){
         query = admin ? queryAdmin : queryUser,
         fields = admin ? fieldsAdmin : fieldsUser,
         filename = admin ? filenameAdmin : filenameUser,
-        limit = admin ? 100 : 20,
+        limit = admin ? 100 : 30,
         latestVersion = [];
     //if writing the user feed, get the contents to check if it changed
     if (!admin){
@@ -196,11 +196,15 @@ function writeFeedForTag(tag, admin){
             var newFileContents = JSON.stringify(results, " ", 2),
                 haveChanged = 'false';
             if (!admin){
-                for (var index=0; index < latestVersion.length; index++){
-                    var item = latestVersion[index];
-                    if (results[index].id != item.id){
+                for (var index=0; index < results.length; index++){
+                    try{
+                        var item = latestVersion[index];
+                        if (results[index].id != item.id){
+                            haveChanged = true;
+                            break;
+                        }
+                    }catch(e){
                         haveChanged = true;
-                        break;
                     }
                 }
                 // compare old with new
