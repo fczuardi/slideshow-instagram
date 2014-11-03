@@ -4,14 +4,17 @@ var delay = 5000,
     tag = 'naturezanacidade',
     isAdminURL = window.location.href.indexOf('admin') != -1;
 
-function getPhotoURLsForTag(tag, cb){
-    var bg = [];
-    console.log('destroy')
+function getPhotoURLsForTag(tag, cb, cachedFeed){
+    var bg = [],
+        url = (cachedFeed === true) ?
+                    'data/response-'+tag+'.json' :
+                    'data/response-'+tag+'.json?' + (new Date).getTime();
     $.vegas('destroy');
     $('body').unbind('vegaswalk');
-    $.getJSON( 'data/response-'+tag+'.json?' + (new Date).getTime())
+    $.getJSON( url)
     .fail(function() {
         console.log( "Error: Feed unavailable" );
+        console.log('keep using the feed we have...');
         startSlideshow();
     })
     .done(function( data ) {
@@ -66,10 +69,10 @@ function startSlideshow(){
         }
     );
 }
-function restartSlideshow(){
+function restartSlideshow(cachedFeed){
     getPhotoURLsForTag(tag, function(){
         startSlideshow();
-    });
+    }, cachedFeed);
 }
 
 function adminInit(){
@@ -119,7 +122,7 @@ if (window.location.href.indexOf('semanaticket') != -1){
     tag = 'semanaticket';
 }
 if (URLParameterDisplay != 'list' && !isAdminURL){
-    restartSlideshow();
+    restartSlideshow(true);
 }else{
     displayPictureList();
     $('#watermarks, #click-overlay').css('display','none');

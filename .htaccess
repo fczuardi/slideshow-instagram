@@ -1,0 +1,12 @@
+AddType text/cache-manifest .appcache
+ExpiresByType text/cache-manifest "access plus 0 seconds"
+
+
+# for NGINX use:
+#    text/cache-manifest                     appcache;
+#
+# on the /etc/nginx/mime.types file and on the config file:
+#
+#    location ~* \.(?:manifest|appcache)$ {
+#    expires -1;
+#    }
