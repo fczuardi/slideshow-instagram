@@ -1,6 +1,24 @@
 Roadmap
 =======
 
+v1.2.0
+-----
+- [ ] testar possíveis melhorias como
+  - [ ] front-end, appcache para o html
+  - [ ] fullscreen api
+  - [ ] front-end, localstorage para as fotos
+  - [ ] copiar fotos no disco local
+- [ ] link para a licença e o código
+- [ ] melhor documentação de como instalar no server ou rodar localmente
+
+v2.0.0
+------
+- [ ] trocar por tag subscription e eliminar o poll a cada minuto
+- [ ] senhas separadas para o admin de cada tag
+
+Versões Passadas
+================
+
 v1.1.0
 -----
 - [x] Usar um BD
@@ -15,22 +33,6 @@ v1.1.0
 - [x] filtros da listagem na tela de admin
 - [x] URL de mosaico com todas as fotos
 - [x] créditos na tela
-
-v1.2.0
------
-- [ ] fullscreen api
-- [ ] testes de
-  - [ ] front-end, appcache para o html
-  - [ ] front-end, localstorage para as fotos
-- [ ] link para a licença e o código
-
-v2.0.0
-------
-- [ ] trocar por tag subscription e eliminar o poll a cada minuto
-- [ ] senhas separadas para o admin de cada tag
-
-Versões Passadas
-================
 
 v1.0.0
 -----
