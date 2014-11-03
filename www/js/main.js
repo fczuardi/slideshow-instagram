@@ -46,6 +46,7 @@ function getParameterByName(name) {
 function startSlideshow(){
     $.vegas('slideshow', {
         delay: delay,
+        preload: true,
         backgrounds:backgrounds
     })('overlay', {
         // src:'js/vegas/overlays/01.png'
