@@ -284,9 +284,11 @@ function updateTagJSON(tag){
         callParameters = {
           name: tag,
           complete: function (mediaObjects){
+
                 createdAfter = (createdAfter == undefined) ? 0 : createdAfter;
                 photoEntriesUpdating[tag] = mediaObjects.length;
                 mediaObjects.forEach(function(item){
+                    console.log(item.created_time, createdAfter, new Date(Number(item.created_time) *1000), new Date(Number(createdAfter)));
                     if (item.created_time < createdAfter){
                         photoEntriesUpdating[tag] -= 1;
                         return;
@@ -314,6 +316,7 @@ function updateTagJSON(tag){
 
 function startPolling(){
     Config.tags.forEach(function (tag){
+        console.log(tag, Config.tags);
         updateTagJSON(tag);
     });
 
