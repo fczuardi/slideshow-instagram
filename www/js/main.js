@@ -3,6 +3,7 @@ var delay = 5000,
     lastSlide = 19,
     tag = 'naturezanacidade',
     isAdminURL = window.location.href.indexOf('admin') != -1,
+    URLParameterDisplay = '',
     page = 0,
     hasNextPage = false;
 
@@ -121,18 +122,33 @@ function displayPictureList(){
                     '" height="'+image.height+'" ></a></li>';
         });
         html += '</ul>';
-        $('body').append(html);
+        if (URLParameterDisplay == 'list' || isAdminURL){
+            html += '<button id="more">More</button>';
+            $('body').append(html);
+            $('#more').click(loadMore);
+        } else {
+            $('body').append(html);
+        }
         if (isAdminURL){
             adminInit();
         }
     });
 }
 
+function loadMore(ev){
+    page += 1;
+    $(this).remove();
+    displayPictureList();
+}
+
+
+
 //init
 $(function() {
 
-var URLParameterTag = getParameterByName('tag'),
-    URLParameterDisplay = getParameterByName('display');
+var URLParameterTag = getParameterByName('tag');
+
+URLParameterDisplay = getParameterByName('display');
 if (URLParameterTag.length > 0){
     tag = URLParameterTag;
 }

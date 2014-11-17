@@ -63,15 +63,7 @@ function filterToggle(ev){
     link.toggleClass('on');
 }
 
-function loadMore(ev){
-    page += 1;
-    $(this).remove();
-    displayPictureList();
-}
-
 function adminInit(){
     $('.filters a').click(filterToggle);
-    $('body').append('<button id="more">More</button>');
-    $('#more').click(loadMore);
     getBlockedUsers();
 }
