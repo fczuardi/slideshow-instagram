@@ -215,7 +215,7 @@ function writeFeedForTag(tag, admin){
         filename = isAdmin ? filenameAdmin : filenameUser,
         filenameParts = filename.split('.'),
         limit = (isAdmin ? 100 : 30),
-        queryLimit = 200,
+        queryLimit = 2000,
         latestVersion = [];
     //querie visible photos for that tag
     collection.find(
